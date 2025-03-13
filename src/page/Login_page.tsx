@@ -25,8 +25,12 @@ const Login: React.FC = () => {
       localStorage.setItem("token_type", token_type);
       localStorage.setItem("role", role);
 
-      // Chuyển hướng đến dashboard hoặc trang chính sau khi đăng nhập
-      navigate("/dashboard");
+      // Chuyển hướng dựa trên role
+      if (role === "admin") {
+        navigate("/dashboard");
+      } else {
+        navigate("/me");
+      }
     } catch (err: any) {
       console.error("Login error:", err);
 
