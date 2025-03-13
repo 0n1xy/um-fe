@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 import api from "../utils/api";
 
 interface User {
@@ -14,28 +14,23 @@ interface User {
 const Dashboard: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
   const [search, setSearch] = useState("");
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const navigate = useNavigate();
 
   useEffect(() => {
     fetchUsers();
-  }, [page, search]);
+  }, [search]);
 
   const fetchUsers = async () => {
     setLoading(true);
     try {
       const response = await api.get(
-        `/admin/users?page=${page}&per_page=10&search=${search}`
+        `/admin/users?per_page=10&search=${search}`
       );
       setUsers(response.data.users);
-      setTotalPages(response.data.total_pages);
     } catch (err) {
-      setError("Failed to fetch users.");
+      console.error("Failed to fetch users.");
     } finally {
       setLoading(false);
     }
