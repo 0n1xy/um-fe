@@ -30,7 +30,7 @@ const Dashboard: React.FC = () => {
         `/admin/users?page=${page}&per_page=10&search=${search}`
       );
       setUsers(response.data.users);
-      setTotalPages(response.data.total_pages || 1); // Lưu tổng số trang từ API
+      setTotalPages(response.data.total_pages); // Lấy tổng số trang từ API
     } catch (err) {
       setError("Failed to fetch users.");
     } finally {
