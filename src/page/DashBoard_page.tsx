@@ -8,6 +8,7 @@ interface User {
   email: string;
   dateOfBirth: string;
   isAdmin: number;
+  password: string;
 }
 
 const Dashboard: React.FC = () => {
@@ -15,8 +16,10 @@ const Dashboard: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [search, setSearch] = useState("");
-  const [page, setPage] = useState(1); // ✅ Thêm trạng thái trang
-  const [totalPages, setTotalPages] = useState(1); // ✅ Tổng số trang
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -30,7 +33,7 @@ const Dashboard: React.FC = () => {
         `/admin/users?page=${page}&per_page=10&search=${search}`
       );
       setUsers(response.data.users);
-      setTotalPages(response.data.total_pages); // Lấy tổng số trang từ API
+      setTotalPages(response.data.total_pages);
     } catch (err) {
       setError("Failed to fetch users.");
     } finally {
@@ -38,138 +41,152 @@ const Dashboard: React.FC = () => {
     }
   };
 
-  const handleNextPage = () => {
-    if (page < totalPages) {
-      setPage(page + 1);
+  const handleDelete = async (id: number) => {
+    if (!window.confirm("Are you sure you want to delete this user?")) return;
+    try {
+      await api.delete(`/admin/users/${id}`);
+      fetchUsers();
+    } catch (err) {
+      alert("Failed to delete user.");
     }
   };
 
-  const handlePrevPage = () => {
-    if (page > 1) {
-      setPage(page - 1);
+  const handleUpdate = async () => {
+    if (!currentUser) return;
+    try {
+      await api.put(`/admin/users/${currentUser.id}`, currentUser);
+      setIsModalOpen(false);
+      fetchUsers();
+    } catch (err) {
+      alert("Failed to update user.");
     }
   };
 
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-3xl font-bold text-gray-700">Admin Dashboard</h2>
-        <button
-          onClick={() => {
-            localStorage.clear();
-            navigate("/login");
-          }}
-          className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
-        >
-          Logout
-        </button>
-      </div>
+      <h2 className="text-3xl font-bold text-gray-700 mb-6">Admin Dashboard</h2>
+      <input
+        type="text"
+        placeholder="🔍 Search user..."
+        className="border px-4 py-2 rounded-md w-1/3 shadow-sm mb-4"
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+      />
 
-      <div className="mb-4 flex items-center justify-between">
-        <input
-          type="text"
-          placeholder="🔍 Search user..."
-          className="border px-4 py-2 rounded-md w-1/3 shadow-sm"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-
-        {/* Phân trang */}
-        <div className="flex items-center space-x-4">
-          <button
-            onClick={handlePrevPage}
-            disabled={page === 1}
-            className={`px-3 py-1 border rounded-md ${
-              page === 1
-                ? "bg-gray-300 cursor-not-allowed"
-                : "bg-blue-500 text-white hover:bg-blue-700"
-            }`}
-          >
-            Previous
-          </button>
-          <span className="text-gray-700">
-            Page {page} of {totalPages}
-          </span>
-          <button
-            onClick={handleNextPage}
-            disabled={page === totalPages}
-            className={`px-3 py-1 border rounded-md ${
-              page === totalPages
-                ? "bg-gray-300 cursor-not-allowed"
-                : "bg-blue-500 text-white hover:bg-blue-700"
-            }`}
-          >
-            Next
-          </button>
-        </div>
-      </div>
-
-      {error && <p className="text-red-500">{error}</p>}
       {loading ? (
-        <p className="text-center">Loading users...</p>
+        <p>Loading users...</p>
       ) : (
-        <div className="bg-white shadow-lg rounded-lg overflow-hidden">
-          <table className="w-full table-auto border-collapse">
-            <thead>
-              <tr className="bg-blue-600 text-white">
-                <th className="py-3 px-4 text-left">ID</th>
-                <th className="py-3 px-4 text-left">Name</th>
-                <th className="py-3 px-4 text-left">Email</th>
-                <th className="py-3 px-4 text-left">Date of Birth</th>
-                <th className="py-3 px-4 text-left">Role</th>
+        <table className="w-full table-auto border-collapse bg-white shadow-lg">
+          <thead>
+            <tr className="bg-blue-600 text-white">
+              <th className="py-3 px-4">ID</th>
+              <th className="py-3 px-4">Name</th>
+              <th className="py-3 px-4">Email</th>
+              <th className="py-3 px-4">Date of Birth</th>
+              <th className="py-3 px-4">Role</th>
+              <th className="py-3 px-4">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {users.map((user) => (
+              <tr key={user.id} className="border-b hover:bg-gray-100">
+                <td className="py-3 px-4">{user.id}</td>
+                <td className="py-3 px-4">{user.name}</td>
+                <td className="py-3 px-4">{user.email}</td>
+                <td className="py-3 px-4">{user.dateOfBirth}</td>
+                <td className="py-3 px-4">
+                  {user.isAdmin === 0 ? "Admin" : "User"}
+                </td>
+                <td className="py-3 px-4 space-x-2">
+                  <button
+                    className="px-3 py-1 bg-yellow-500 text-white rounded-md"
+                    onClick={() => {
+                      setCurrentUser(user);
+                      setIsModalOpen(true);
+                    }}
+                  >
+                    Update
+                  </button>
+                  <button
+                    className="px-3 py-1 bg-red-500 text-white rounded-md"
+                    onClick={() => handleDelete(user.id)}
+                  >
+                    Delete
+                  </button>
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {users.map((user) => (
-                <tr key={user.id} className="border-b hover:bg-gray-100">
-                  <td className="py-3 px-4">{user.id}</td>
-                  <td className="py-3 px-4">{user.name}</td>
-                  <td className="py-3 px-4">{user.email}</td>
-                  <td className="py-3 px-4">{user.dateOfBirth}</td>
-                  <td className="py-3 px-4">
-                    <span
-                      className={`px-3 py-1 text-white rounded-md ${
-                        user.isAdmin === 0 ? "bg-green-500" : "bg-gray-500"
-                      }`}
-                    >
-                      {user.isAdmin === 0 ? "Admin" : "User"}
-                    </span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+            ))}
+          </tbody>
+        </table>
       )}
 
-      {/* Pagination buttons */}
-      <div className="mt-4 flex justify-center space-x-4">
-        <button
-          onClick={handlePrevPage}
-          disabled={page === 1}
-          className={`px-3 py-1 border rounded-md ${
-            page === 1
-              ? "bg-gray-300 cursor-not-allowed"
-              : "bg-blue-500 text-white hover:bg-blue-700"
-          }`}
-        >
-          Previous
-        </button>
-        <span className="text-gray-700">
-          Page {page} of {totalPages}
-        </span>
-        <button
-          onClick={handleNextPage}
-          disabled={page === totalPages}
-          className={`px-3 py-1 border rounded-md ${
-            page === totalPages
-              ? "bg-gray-300 cursor-not-allowed"
-              : "bg-blue-500 text-white hover:bg-blue-700"
-          }`}
-        >
-          Next
-        </button>
-      </div>
+      {/* Update Modal */}
+      {isModalOpen && currentUser && (
+        <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center">
+          <div className="bg-white p-6 rounded-md shadow-md w-1/3">
+            <h3 className="text-xl font-bold mb-4">Update User</h3>
+            <input
+              type="text"
+              value={currentUser.name}
+              onChange={(e) =>
+                setCurrentUser({ ...currentUser, name: e.target.value })
+              }
+              className="w-full border p-2 rounded mb-2"
+            />
+            <input
+              type="email"
+              value={currentUser.email}
+              onChange={(e) =>
+                setCurrentUser({ ...currentUser, email: e.target.value })
+              }
+              className="w-full border p-2 rounded mb-2"
+            />
+            <input
+              type="date"
+              value={currentUser.dateOfBirth}
+              onChange={(e) =>
+                setCurrentUser({ ...currentUser, dateOfBirth: e.target.value })
+              }
+              className="w-full border p-2 rounded mb-2"
+            />
+            <select
+              value={currentUser.isAdmin}
+              onChange={(e) =>
+                setCurrentUser({
+                  ...currentUser,
+                  isAdmin: Number(e.target.value),
+                })
+              }
+              className="w-full border p-2 rounded mb-4"
+            >
+              <option value={0}>Admin</option>
+              <option value={1}>User</option>
+            </select>
+            <input
+              type="password"
+              value={currentUser.password}
+              onChange={(e) =>
+                setCurrentUser({ ...currentUser, password: e.target.value })
+              }
+              className="w-full border p-2 rounded mb-2"
+            />
+            <div className="flex justify-end space-x-2">
+              <button
+                className="bg-gray-400 px-4 py-2 rounded-md"
+                onClick={() => setIsModalOpen(false)}
+              >
+                Cancel
+              </button>
+              <button
+                className="bg-blue-500 text-white px-4 py-2 rounded-md"
+                onClick={handleUpdate}
+              >
+                Save Changes
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
