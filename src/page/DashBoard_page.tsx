@@ -1,21 +1,13 @@
 import React, { useEffect, useState } from "react";
 import api from "../utils/api";
 import { useNavigate } from "react-router-dom";
-
-interface User {
-  id: number;
-  name: string;
-  email: string;
-  dateOfBirth: string;
-  isAdmin: number;
-  password?: string;
-}
+import { IUser } from "../types/User_Interface";
 
 const Dashboard: React.FC = () => {
-  const [users, setUsers] = useState<User[]>([]);
+  const [users, setUsers] = useState<IUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [currentUser, setCurrentUser] = useState<IUser | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [message, setMessage] = useState("");
@@ -110,7 +102,7 @@ const Dashboard: React.FC = () => {
   const handleUpdate = async () => {
     if (!currentUser) return;
 
-    const updateData: User = {
+    const updateData: IUser = {
       id: currentUser.id,
       name: currentUser.name,
       email: currentUser.email,
