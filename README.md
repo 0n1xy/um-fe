@@ -1,54 +1,107 @@
-# React + TypeScript + Vite
+# **User Management Frontend - React Vite**
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## **Giới thiệu**
 
-Currently, two official plugins are available:
+Đây là frontend của ứng dụng Quản Lý Người Dùng, được xây dựng bằng **ReactJS** sử dụng **Vite** để tăng tốc độ khởi động và tối ưu hóa hiệu suất.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## Expanding the ESLint configuration
+## **1. Yêu cầu hệ thống**
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+Trước khi bắt đầu, hãy đảm bảo bạn đã cài đặt các công cụ sau trên hệ thống của mình:
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+- **Node.js** (>= 16.x): [Tải về tại đây](https://nodejs.org/)
+- **Yarn** hoặc **npm** để quản lý package
+- **Git** để clone repository
+
+---
+
+## **2. Cách cài đặt và chạy ứng dụng**
+
+### **Bước 1: Clone repository**
+
+```bash
+git clone https://github.com/0n1xy/um-fe.git
+cd um-fe
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### **Bước 2: Cài đặt dependencies**
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Nếu sử dụng **npm**:
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+```bash
+npm install
 ```
+
+Hoặc nếu sử dụng **yarn**:
+
+```bash
+yarn install
+```
+
+### **Bước 3: Chạy ứng dụng**
+
+Nếu sử dụng **npm**:
+
+```bash
+npm run dev
+```
+
+Nếu sử dụng **yarn**:
+
+```bash
+yarn dev
+```
+
+Sau khi chạy, Vite sẽ hiển thị đường dẫn để truy cập ứng dụng, thông thường là:
+
+```
+http://localhost:5173/
+```
+
+---
+
+## **3. Build ứng dụng**
+
+Nếu bạn muốn build ứng dụng để deploy:
+
+```bash
+npm run build
+```
+
+Hoặc:
+
+```bash
+yarn build
+```
+
+Thư mục `dist/` sẽ chứa mã nguồn đã được build sẵn.
+
+---
+
+## **4. CI/CD với GitHub Actions**
+
+Ứng dụng được triển khai tự động bằng **GitHub Actions**. Mỗi khi có thay đổi trên repository, GitHub Actions sẽ:
+
+1. Kiểm tra code (lint, test, build).
+2. Deploy lên Vercel.
+
+Không cần thao tác thủ công, chỉ cần push code lên repository.
+
+---
+
+## **5. Công nghệ sử dụng**
+
+- **ReactJS** - Thư viện UI chính
+- **Vite** - Công cụ build nhanh và nhẹ
+- **Tailwind CSS / Material UI** - Thiết kế giao diện
+- **Axios** - Gọi API từ backend
+- **React Router** - Điều hướng trang
+- **GitHub Actions** - CI/CD tự động
+
+---
+
+## **6. Thông tin liên hệ**
+
+Mọi thắc mắc vui lòng liên hệ:  
+📧 Email: admin@example.com
