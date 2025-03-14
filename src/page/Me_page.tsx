@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import api from "../utils/api";
+import { useNavigate } from "react-router-dom";
 
 interface User {
   id: number;
@@ -13,6 +14,7 @@ const Me: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchUserInfo();
@@ -27,6 +29,11 @@ const Me: React.FC = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleLogout = () => {
+    localStorage.clear();
+    navigate("/login");
   };
 
   return (
@@ -62,6 +69,12 @@ const Me: React.FC = () => {
                 {user.isAdmin === 0 ? "Admin" : "User"}
               </span>
             </p>
+            <button
+              className="bg-red-500 text-white px-4 py-2 rounded-md mt-10"
+              onClick={handleLogout}
+            >
+              Logout
+            </button>
           </div>
         ) : (
           <p>No user data found.</p>
