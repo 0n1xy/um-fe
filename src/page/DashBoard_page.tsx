@@ -38,8 +38,9 @@ const Dashboard: React.FC = () => {
       const response = await api.get(
         `/admin/users?per_page=${perPage}&page=${currentPage}&search=${search}`
       );
+      console.log(response);
       setUsers(response.data.users);
-      setTotalPages(response.data.totalPages);
+      setTotalPages(response.data.total_pages);
     } catch (err) {
       console.error("Failed to fetch users.");
     } finally {
